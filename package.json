@@ -1,18 +1,26 @@
 {
   "name": "vscode-formatter-button",
+  "private": true,
   "displayName": "vscode-formatter-button",
   "description": "A simple extension that adding button for status bar for eazing run document formatting",
   "version": "1.0.0",
   "publisher": "yarastqt",
   "author": "Tropin Eugeniy <yarastqt@gmail.com>",
-  "private": true,
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yarastqt/vscode-formatter-button.git"
+  },
+  "bugs": {
+    "url": "https://github.com/yarastqt/vscode-formatter-button/issues"
+  },
+  "homepage": "https://github.com/yarastqt/vscode-formatter-button#readme",
   "icon": "icon.png",
   "engines": {
     "vscode": "^1.67.0"
   },
   "activationEvents": [
-    "*"
+    "onStartupFinished"
   ],
   "main": "./build/extension.js",
   "scripts": {
