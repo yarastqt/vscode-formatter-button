@@ -1,60 +1,35 @@
-import * as vscode from "vscode";
-
-let myStatusBarItem: vscode.StatusBarItem;
+import * as vscode from 'vscode'
 
 export function activate({ subscriptions }: vscode.ExtensionContext) {
-  // register a command that is invoked when the status bar
-  // item is selected
-  const myCommandId = "sample.showSelectionCount";
-  subscriptions.push(
-    vscode.commands.registerCommand(myCommandId, () => {
-      const n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
-      vscode.window.showInformationMessage(
-        `Yeah, ${n} line(s) selected... Keep going!`
-      );
-    })
-  );
+  const COMMAND_ID = 'formatter-button.run'
 
-  // create a new status bar item that we can now manage
-  myStatusBarItem = vscode.window.createStatusBarItem(
-    vscode.StatusBarAlignment.Right,
-    100
-  );
-  myStatusBarItem.command = myCommandId;
-  subscriptions.push(myStatusBarItem);
+  const disposable = vscode.commands.registerCommand(COMMAND_ID, async () => {
+    const documentUri = vscode.window.activeTextEditor?.document.uri
+    const result = await vscode.commands.executeCommand<vscode.TextEdit[]>(
+      'vscode.executeFormatDocumentProvider',
+      documentUri,
+    )
 
-  // register some listener that make sure the status bar
-  // item always up-to-date
-  subscriptions.push(
-    vscode.window.onDidChangeActiveTextEditor(updateStatusBarItem)
-  );
-  subscriptions.push(
-    vscode.window.onDidChangeTextEditorSelection(updateStatusBarItem)
-  );
+    if (result && documentUri) {
+      const edit = new vscode.WorkspaceEdit()
 
-  // update status bar item once at start
-  updateStatusBarItem();
-}
+      for (const textEdit of result) {
+        edit.replace(documentUri, textEdit.range, textEdit.newText)
+      }
 
-function updateStatusBarItem(): void {
-  const n = getNumberOfSelectedLines(vscode.window.activeTextEditor);
-  if (n > 0) {
-    myStatusBarItem.text = `$(megaphone) ${n} line(s) selected`;
-    myStatusBarItem.show();
-  } else {
-    myStatusBarItem.hide();
-  }
-}
+      await vscode.workspace.applyEdit(edit)
+    }
+  })
 
-function getNumberOfSelectedLines(
-  editor: vscode.TextEditor | undefined
-): number {
-  let lines = 0;
-  if (editor) {
-    lines = editor.selections.reduce(
-      (prev, curr) => prev + (curr.end.line - curr.start.line),
-      0
-    );
-  }
-  return lines;
+  const prettierStatusBarItem = vscode.window.createStatusBarItem(
+    vscode.StatusBarAlignment.Left,
+    100,
+  )
+  prettierStatusBarItem.text = `$(chevron-right)$(chevron-right)$(chevron-right) RUN FORMATTING $(chevron-left)$(chevron-left)$(chevron-left)`
+  prettierStatusBarItem.show()
+
+  prettierStatusBarItem.command = COMMAND_ID
+
+  subscriptions.push(disposable)
+  subscriptions.push(prettierStatusBarItem)
 }
