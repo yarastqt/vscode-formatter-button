@@ -1,11 +1,13 @@
 {
   "name": "vscode-formatter-button",
   "displayName": "vscode-formatter-button",
-  "description": "",
-  "version": "0.0.1",
+  "description": "A simple extension that adding button for status bar for eazing run document formatting",
+  "version": "1.0.0",
   "publisher": "yarastqt",
+  "author": "Tropin Eugeniy <yarastqt@gmail.com>",
   "private": true,
   "license": "MIT",
+  "icon": "icon.png",
   "engines": {
     "vscode": "^1.34.0"
   },
